@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>泵挂深度动态优化管理系统 · 高升采油厂采油作业三区</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="app-shell">
+
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="welcome-bg-deco">
+      <div class="formation-band band-a"></div>
+      <div class="formation-band band-b"></div>
+      <div class="formation-grid"></div>
+    </div>
+
+    <div class="welcome-container">
+      <section class="welcome-hero">
+        <div class="welcome-copy">
+          <div class="welcome-badge"><span class="welcome-pulse-dot"></span> 辽河油田 · 高升采油厂 · 采油作业三区</div>
+          <p class="welcome-kicker">Pump Depth Optimization Control Room</p>
+          <h1 class="welcome-title">泵挂深度动态优化管理系统</h1>
+          <p class="welcome-subtitle">围绕动液面、沉没度、泵效和节点协调点，建立单井诊断、方案推演、调参提醒与历史闭环。</p>
+
+          <div class="welcome-actions">
+            <button class="welcome-btn" onclick="App.enterSystem()">进入工程看板</button>
+            <button class="welcome-btn welcome-btn-secondary" onclick="App.openLoginModal()">登录</button>
+            <div class="welcome-status">
+              <span class="status-dot"></span>
+              PostgreSQL 实时数据已接入
+            </div>
+            <div class="welcome-status">
+              <span class="status-dot status-dot-warning"></span>
+              查看和下载免登录，写入操作需登录
+            </div>
+          </div>
+        </div>
+
+        <div class="well-section-panel dynamic-well-panel" aria-label="动态泵挂优化示意">
+          <div class="panel-topline">
+            <span>G3-4 泵挂优化动态剖面</span>
+            <strong>建议加深 60m</strong>
+          </div>
+          <div class="dynamic-well-layout">
+            <div class="well-diagram dynamic-well-diagram">
+              <div class="depth-scale">
+                <span>0m</span>
+                <span>900m</span>
+                <span>1750m</span>
+                <span>2010m</span>
+              </div>
+              <div class="casing animated-casing">
+                <div class="fluid-column animated-fluid"></div>
+                <div class="pump-marker animated-pump"></div>
+                <div class="level-marker animated-level"></div>
+              </div>
+              <div class="well-callouts">
+                <div class="callout level">动液面 1750m</div>
+                <div class="callout pump">当前泵挂 1860m</div>
+                <div class="callout target">优化泵挂 1920m</div>
+              </div>
+            </div>
+            <div class="home-important-info">
+              <div><span>重点潜力井</span><strong>G3-4</strong></div>
+              <div><span>当前沉没度</span><strong>110m</strong></div>
+              <div><span>预计泵效</span><strong>45.6%</strong></div>
+              <div><span>增油空间</span><strong>+0.8t/d</strong></div>
+              <div><span>风险提示</span><strong>沉没度偏低</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="welcome-stats-bar" id="welcomeStats">
+        <div class="welcome-stat-item"><div class="s-number">20</div><div class="s-label">管理井数</div></div>
+        <div class="welcome-stat-item"><div class="s-number">16</div><div class="s-label">生产井</div></div>
+        <div class="welcome-stat-item"><div class="s-number">3</div><div class="s-label">潜力井</div></div>
+        <div class="welcome-stat-item"><div class="s-number">2</div><div class="s-label">报警井</div></div>
+        <div class="welcome-stat-item"><div class="s-number">72.4</div><div class="s-label">日油 t</div></div>
+        <div class="welcome-stat-item"><div class="s-number">246</div><div class="s-label">平均沉没度 m</div></div>
+      </div>
+
+      <div class="welcome-features">
+        <button class="welcome-feature-card" type="button" onclick="App.enterSystem('dashboard')"><span class="f-index">01</span><div class="f-title">采集监控</div><div class="f-desc">井深、泵挂、动液面、产液与载荷参数统一入库。</div><span class="f-link">进入总览</span></button>
+        <button class="welcome-feature-card" type="button" onclick="App.enterSystem('wells')"><span class="f-index">02</span><div class="f-title">供液诊断</div><div class="f-desc">识别沉没度不足、泵效偏低、回压异常等工况风险。</div><span class="f-link">查看单井</span></button>
+        <button class="welcome-feature-card" type="button" onclick="App.enterSystem('screening')"><span class="f-index">03</span><div class="f-title">潜力筛选</div><div class="f-desc">按泵效和沉没度规则推送泵挂加深候选井。</div><span class="f-link">进入筛选</span></button>
+        <button class="welcome-feature-card" type="button" onclick="App.enterSystem('deepen')"><span class="f-index">04</span><div class="f-title">方案推演</div><div class="f-desc">输入加深幅度，预测新泵挂、泵效提升和增油空间。</div><span class="f-link">设计方案</span></button>
+        <button class="welcome-feature-card" type="button" onclick="App.enterSystem('nodal')"><span class="f-index">05</span><div class="f-title">节点分析</div><div class="f-desc">联立 IPR/VLP 曲线，判断当前生产点与协调点偏差。</div><span class="f-link">进入分析</span></button>
+        <button class="welcome-feature-card" type="button" onclick="App.enterSystem('history')"><span class="f-index">06</span><div class="f-title">闭环追踪</div><div class="f-desc">记录历次泵挂调整原因、效果和复盘结论。</div><span class="f-link">查看记录</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-modal hidden" id="loginModal" role="dialog" aria-modal="true" aria-label="系统登录">
+    <div class="login-modal-backdrop" onclick="App.closeLoginModal()"></div>
+    <div class="login-panel login-modal-panel">
+      <div class="panel-topline">
+        <span id="loginModalTitle">工程用户登录</span>
+        <button class="login-close" type="button" onclick="App.closeLoginModal()" aria-label="关闭">×</button>
+      </div>
+
+      <form class="engineering-login-form" id="loginForm" onsubmit="App.handleLogin(event)">
+        <label class="login-field">
+          <span>账号</span>
+          <input type="text" name="username" autocomplete="username" value="admin" placeholder="请输入账号">
+        </label>
+        <label class="login-field">
+          <span>密码</span>
+          <input type="password" name="password" autocomplete="current-password" value="123456" placeholder="请输入密码">
+        </label>
+        <label class="login-field">
+          <span>角色</span>
+          <select name="role">
+            <option value="engineer">采油工程师</option>
+            <option value="dispatcher">生产调度</option>
+            <option value="manager">管理人员</option>
+          </select>
+        </label>
+
+        <div class="login-options">
+          <label><input type="checkbox" name="remember" checked> 记住登录</label>
+          <span>默认账号 admin / 123456</span>
+        </div>
+
+        <div class="login-message" id="loginMessage" aria-live="polite"></div>
+        <button class="welcome-btn login-submit" type="submit">登录</button>
+      </form>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">井</div>
+      <h1>泵挂深度动态优化</h1>
+      <div class="subtitle">高升采油厂 · 采油作业三区</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-page="dashboard"><span class="nav-icon">总</span><span class="nav-label">总览看板</span></a>
+      <a class="nav-item" data-page="wells"><span class="nav-icon">井</span><span class="nav-label">单井看板</span></a>
+      <a class="nav-item" data-page="screening"><span class="nav-icon">筛</span><span class="nav-label">潜力井筛选</span><span class="nav-badge" id="potentialBadge">3</span></a>
+      <a class="nav-item" data-page="deepen"><span class="nav-icon">深</span><span class="nav-label">加深方案设计</span></a>
+      <a class="nav-item" data-page="nodal"><span class="nav-icon">节</span><span class="nav-label">节点分析</span></a>
+      <a class="nav-item" data-page="tuning"><span class="nav-icon">调</span><span class="nav-label">动态调参</span></a>
+      <a class="nav-item" data-page="history"><span class="nav-icon">史</span><span class="nav-label">历史记录</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      v2.0 · PostgreSQL<br>
+      辽河油田 · 高升采油厂
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="breadcrumb" id="breadcrumb">首页 / <span>总览看板</span></div>
+      </div>
+      <div class="header-right">
+        <div class="header-status-strip">
+          <span class="status-pill is-live">PostgreSQL 在线</span>
+          <span class="status-pill">数据同步 <strong id="dataSyncTime">--</strong></span>
+          <span class="status-pill">采油作业三区</span>
+        </div>
+        <div class="header-time" id="headerTime">--</div>
+        <div class="header-actions">
+          <button class="btn btn-outline btn-sm" id="loginStateButton" onclick="App.openLoginModal()">登录</button>
+          <button class="btn btn-outline btn-sm" onclick="App.navigate('dashboard')">刷新</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <section class="page-section active" id="page-dashboard">
+        <div class="section-title">总览看板 <small>采油作业三区 · 实时数据</small></div>
+        <div class="stats-grid" id="dashboard-stats"></div>
+
+        <div class="grid-2-1">
+          <div class="card">
+            <div class="card-header"><h3>动液面趋势（G3-1井 · 24h）</h3></div>
+            <div class="card-body"><div class="chart-container"><canvas id="chartDynamicLevel"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>井状态分布</h3></div>
+            <div class="card-body"><div class="chart-container chart-container-sm" style="height:220px"><canvas id="chartWellDistribution"></canvas></div></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>泵效-沉没度分析</h3></div>
+            <div class="card-body"><div class="chart-container chart-container-lg"><canvas id="chartEfficiencyScatter"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>月度产油与含水趋势</h3></div>
+            <div class="card-body"><div class="chart-container chart-container-lg"><canvas id="chartMonthlyTrend"></canvas></div></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h3>逢五调参提醒</h3></div>
+            <div class="card-body" id="dashboard-tuning-reminder"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>最近优化记录</h3></div>
+            <div class="card-body" id="dashboard-recent-optimizations"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-section" id="page-wells">
+        <div class="section-title">单井综合看板 <small>实时数据监控与工况诊断</small></div>
+        <div id="wells-container"></div>
+      </section>
+
+      <section class="page-section" id="page-screening">
+        <div class="section-title">潜力井自动筛选 <small>泵效 &lt; 40% 且沉没度 &lt; 200m</small></div>
+        <div id="screening-container"></div>
+      </section>
+
+      <section class="page-section" id="page-deepen">
+        <div class="section-title">加深方案辅助设计 <small>安全性校核 + 增油潜力预测</small></div>
+        <div id="deepen-container"></div>
+      </section>
+
+      <section class="page-section" id="page-nodal">
+        <div class="section-title">节点分析 <small>井底流压节点 · IPR/VLP 联立求解</small></div>
+        <div id="nodal-container"></div>
+      </section>
+
+      <section class="page-section" id="page-tuning">
+        <div class="section-title">动态调参提醒 <small>逢五调参 + 参数优化推荐</small></div>
+        <div id="tuning-container"></div>
+      </section>
+
+      <section class="page-section" id="page-history">
+        <div class="section-title">历史优化记录追踪 <small>全生命周期闭环管理</small></div>
+        <div id="history-container"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const badge = document.getElementById('potentialBadge');
+        if (badge) badge.textContent = DataStore.getPotentialWells().length;
+      }, 200);
+    });
+  </script>
+
+</body>
+</html>
