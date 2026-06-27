@@ -195,9 +195,33 @@ body {
 .breadcrumb {
   font-size: 13px;
   color: var(--text-light);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .breadcrumb span { color: var(--text); font-weight: 600; }
+
+.breadcrumb-home {
+  border: 0;
+  background: transparent;
+  color: var(--text-light);
+  cursor: pointer;
+  font: inherit;
+  padding: 2px 0;
+}
+
+.breadcrumb-home:hover,
+.breadcrumb-home:focus-visible {
+  color: var(--primary);
+  text-decoration: underline;
+  outline: none;
+}
+
+.breadcrumb-separator {
+  color: var(--text-light) !important;
+  font-weight: 400 !important;
+}
 
 .header-right {
   display: flex;

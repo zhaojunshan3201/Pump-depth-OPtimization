@@ -80,6 +80,24 @@ const App = {
     setTimeout(() => this.navigate(page), 400);
   },
 
+  showHome() {
+    const overlay = document.getElementById('welcomeOverlay');
+    if (overlay) overlay.classList.remove('hidden');
+
+    document.querySelectorAll('.nav-item').forEach((item) => {
+      item.classList.toggle('active', item.dataset.page === 'dashboard');
+    });
+
+    const breadcrumb = document.getElementById('breadcrumb');
+    if (breadcrumb) {
+      breadcrumb.innerHTML = '<button class="breadcrumb-home" type="button" onclick="App.showHome()">首页</button><span class="breadcrumb-separator">/</span><span>总览看板</span>';
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) sidebar.classList.remove('open');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
   openLoginModal(action = null, reason = '') {
     this.pendingAuthAction = typeof action === 'function' ? action : null;
     const modal = document.getElementById('loginModal');
@@ -171,7 +189,9 @@ const App = {
       history: '历史记录'
     };
     const breadcrumb = document.getElementById('breadcrumb');
-    if (breadcrumb) breadcrumb.innerHTML = `首页 / <span>${pageNames[page] || page}</span>`;
+    if (breadcrumb) {
+      breadcrumb.innerHTML = `<button class="breadcrumb-home" type="button" onclick="App.showHome()">首页</button><span class="breadcrumb-separator">/</span><span>${pageNames[page] || page}</span>`;
+    }
 
     document.querySelectorAll('.page-section').forEach((section) => section.classList.remove('active'));
     const target = document.getElementById(`page-${page}`);

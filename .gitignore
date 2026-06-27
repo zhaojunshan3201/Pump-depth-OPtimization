@@ -2,10 +2,12 @@ node_modules/
 .env
 
 .chrome-verify*/
+.playwright-cli/
 .superpowers/
 
 server.err.log
 server.out.log
+.server.pid
 *.log
 
 coverage/

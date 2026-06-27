@@ -49,6 +49,19 @@ describe('home access and login flow', () => {
     expect(html).toContain("App.enterSystem('history')");
   });
 
+  it('makes the breadcrumb home item return to the welcome homepage', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
+    const css = fs.readFileSync(path.join(root, 'css/style.css'), 'utf8');
+
+    expect(html).toContain('breadcrumb-home');
+    expect(html).toContain('onclick="App.showHome()"');
+    expect(app).toContain('showHome()');
+    expect(app).toContain("overlay.classList.remove('hidden')");
+    expect(app).toContain('breadcrumb-home');
+    expect(css).toContain('.breadcrumb-home');
+  });
+
   it('renders the taste-optimized engineering shell signals', () => {
     const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
     const css = fs.readFileSync(path.join(root, 'css/style.css'), 'utf8');
