@@ -74,6 +74,17 @@ describe('home access and login flow', () => {
     expect(css).toContain('.header-status-strip');
   });
 
+  it('renders the sidebar brand mark as a running pumpjack', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const css = fs.readFileSync(path.join(root, 'css/style.css'), 'utf8');
+
+    expect(html).toContain('pumpjack-logo');
+    expect(html).toContain('pumpjack-beam');
+    expect(html).toContain('pumpjack-counterweight');
+    expect(css).toContain('@keyframes pumpjack-rock');
+    expect(css).toContain('@keyframes counterweight-spin');
+  });
+
   it('adds a real Excel data import entry with template download and upload controls', () => {
     const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
     const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');

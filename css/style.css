@@ -64,8 +64,120 @@ body {
 }
 
 .sidebar-header .logo-icon {
-  font-size: 32px;
-  margin-bottom: 6px;
+  margin: 0 auto 8px;
+}
+
+.pumpjack-logo {
+  position: relative;
+  width: 86px;
+  height: 52px;
+}
+
+.pumpjack-logo::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 2px;
+  height: 1px;
+  background: rgba(255,255,255,0.5);
+}
+
+.pumpjack-beam {
+  position: absolute;
+  left: 19px;
+  top: 13px;
+  width: 48px;
+  height: 5px;
+  background: #fff;
+  border-radius: 999px;
+  transform-origin: 31px 50%;
+  animation: pumpjack-rock 1.6s ease-in-out infinite;
+}
+
+.pumpjack-head {
+  position: absolute;
+  left: 9px;
+  top: 10px;
+  width: 17px;
+  height: 18px;
+  border: 4px solid #fff;
+  border-right: 0;
+  border-radius: 14px 0 0 14px;
+  animation: pumpjack-head-bob 1.6s ease-in-out infinite;
+}
+
+.pumpjack-samson {
+  position: absolute;
+  left: 45px;
+  top: 18px;
+  width: 25px;
+  height: 28px;
+  border-left: 5px solid #fff;
+  border-bottom: 5px solid #fff;
+  transform: skewX(-18deg);
+}
+
+.pumpjack-counterweight {
+  position: absolute;
+  right: 10px;
+  top: 23px;
+  width: 17px;
+  height: 17px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  animation: counterweight-spin 1.6s linear infinite;
+}
+
+.pumpjack-counterweight::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 3px;
+  background: #fff;
+  transform-origin: 0 50%;
+}
+
+.pumpjack-well {
+  position: absolute;
+  left: 16px;
+  top: 27px;
+  width: 3px;
+  height: 18px;
+  background: #fff;
+  border-radius: 999px;
+  animation: well-rod-pulse 1.6s ease-in-out infinite;
+}
+
+.pumpjack-base {
+  position: absolute;
+  left: 30px;
+  bottom: 6px;
+  width: 45px;
+  height: 5px;
+  background: #fff;
+  border-radius: 999px;
+}
+
+@keyframes pumpjack-rock {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(9deg); }
+}
+
+@keyframes pumpjack-head-bob {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(4px); }
+}
+
+@keyframes counterweight-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes well-rod-pulse {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(4px); }
 }
 
 .sidebar-header h1 {
