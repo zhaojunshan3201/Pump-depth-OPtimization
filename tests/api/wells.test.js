@@ -211,27 +211,26 @@ describe('wells api', () => {
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toContain('spreadsheetml.sheet');
     expect(headers).toEqual([
-      'id',
-      'name',
-      'zone',
-      'status',
-      'depth',
-      'pump_depth',
-      'pump_efficiency',
-      'dynamic_level',
-      'submergence',
-      'current_value',
-      'load_value',
-      'stroke_rate',
-      'stroke_length',
-      'back_pressure',
-      'daily_oil',
-      'daily_water',
-      'water_cut',
-      'last_overhaul',
-      'reservoir_pressure',
-      'bubble_point_pressure',
-      'aof'
+      '序号',
+      '井号',
+      '区块',
+      '油井类型',
+      '井底深度',
+      '泵挂深度',
+      '泵效',
+      '动液面',
+      '沉没度',
+      '电流',
+      '最大载荷',
+      '冲次',
+      '冲程',
+      '回压',
+      '日产油',
+      '日产水',
+      '含水',
+      '最近作业日期',
+      '地层压力',
+      '饱和压力'
     ]);
   });
 
@@ -240,33 +239,32 @@ describe('wells api', () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('油井数据');
     worksheet.addRow([
-      'id',
-      'name',
-      'zone',
-      'status',
-      'depth',
-      'pump_depth',
-      'pump_efficiency',
-      'dynamic_level',
-      'submergence',
-      'current_value',
-      'load_value',
-      'stroke_rate',
-      'stroke_length',
-      'back_pressure',
-      'daily_oil',
-      'daily_water',
-      'water_cut',
-      'last_overhaul',
-      'reservoir_pressure',
-      'bubble_point_pressure',
-      'aof'
+      '序号',
+      '井号',
+      '区块',
+      '油井类型',
+      '井底深度',
+      '泵挂深度',
+      '泵效',
+      '动液面',
+      '沉没度',
+      '电流',
+      '最大载荷',
+      '冲次',
+      '冲程',
+      '回压',
+      '日产油',
+      '日产水',
+      '含水',
+      '最近作业日期',
+      '地层压力',
+      '饱和压力'
     ]);
     worksheet.addRow([
+      1,
       'REAL-XLSX-1',
-      'Excel井-1',
       '一区',
-      'producing',
+      '生产',
       1888,
       1666,
       51.2,
@@ -282,8 +280,7 @@ describe('wells api', () => {
       68.7,
       '2026-06-01',
       15.6,
-      9.4,
-      16.8
+      9.4
     ]);
     const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
     const app = createApp();
@@ -297,7 +294,7 @@ describe('wells api', () => {
     expect(res.body.imported).toBe(1);
     expect(db.query).toHaveBeenCalledWith(expect.stringContaining('on conflict (id) do update set'), [
       'REAL-XLSX-1',
-      'Excel井-1',
+      'REAL-XLSX-1',
       '一区',
       'producing',
       1888,
@@ -316,7 +313,7 @@ describe('wells api', () => {
       '2026-06-01',
       15.6,
       9.4,
-      16.8
+      13.8
     ]);
   });
 

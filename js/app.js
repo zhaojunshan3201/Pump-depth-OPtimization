@@ -553,27 +553,26 @@ const App = {
             </div>
           </form>
           <div class="import-field-grid">
-            <div><strong>id</strong><span>井号</span></div>
-            <div><strong>name</strong><span>井名</span></div>
-            <div><strong>zone</strong><span>作业区/区块</span></div>
-            <div><strong>status</strong><span>producing / maintenance / shutdown</span></div>
-            <div><strong>depth</strong><span>井深</span></div>
-            <div><strong>pump_depth</strong><span>泵挂深度</span></div>
-            <div><strong>pump_efficiency</strong><span>泵效</span></div>
-            <div><strong>dynamic_level</strong><span>动液面</span></div>
-            <div><strong>submergence</strong><span>沉没度</span></div>
-            <div><strong>current_value</strong><span>电流</span></div>
-            <div><strong>load_value</strong><span>载荷</span></div>
-            <div><strong>stroke_rate</strong><span>冲次</span></div>
-            <div><strong>stroke_length</strong><span>冲程</span></div>
-            <div><strong>back_pressure</strong><span>回压</span></div>
-            <div><strong>daily_oil</strong><span>日油</span></div>
-            <div><strong>daily_water</strong><span>日水</span></div>
-            <div><strong>water_cut</strong><span>含水率</span></div>
-            <div><strong>last_overhaul</strong><span>最近作业日期</span></div>
-            <div><strong>reservoir_pressure</strong><span>地层压力</span></div>
-            <div><strong>bubble_point_pressure</strong><span>饱和压力</span></div>
-            <div><strong>aof</strong><span>无阻流量</span></div>
+            <div><strong>序号</strong><span>模板行号</span></div>
+            <div><strong>井号</strong><span>油井唯一编号</span></div>
+            <div><strong>区块</strong><span>作业区/区块</span></div>
+            <div><strong>油井类型</strong><span>生产 / 作业 / 关停</span></div>
+            <div><strong>井底深度</strong><span>井深</span></div>
+            <div><strong>泵挂深度</strong><span>泵挂深度</span></div>
+            <div><strong>泵效</strong><span>泵效</span></div>
+            <div><strong>动液面</strong><span>动液面</span></div>
+            <div><strong>沉没度</strong><span>沉没度</span></div>
+            <div><strong>电流</strong><span>电流</span></div>
+            <div><strong>最大载荷</strong><span>最大载荷</span></div>
+            <div><strong>冲次</strong><span>冲次</span></div>
+            <div><strong>冲程</strong><span>冲程</span></div>
+            <div><strong>回压</strong><span>回压</span></div>
+            <div><strong>日产油</strong><span>日产油</span></div>
+            <div><strong>日产水</strong><span>日产水</span></div>
+            <div><strong>含水</strong><span>含水</span></div>
+            <div><strong>最近作业日期</strong><span>最近作业日期</span></div>
+            <div><strong>地层压力</strong><span>地层压力</span></div>
+            <div><strong>饱和压力</strong><span>饱和压力</span></div>
           </div>
         </div>
       </div>

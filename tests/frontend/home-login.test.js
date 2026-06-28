@@ -91,29 +91,29 @@ describe('home access and login flow', () => {
     expect(data).toContain('importWellsExcel');
     expect(app).not.toContain('realDataImportJson');
     [
-      'id',
-      'name',
-      'zone',
-      'status',
-      'depth',
-      'pump_depth',
-      'pump_efficiency',
-      'dynamic_level',
-      'submergence',
-      'current_value',
-      'load_value',
-      'stroke_rate',
-      'stroke_length',
-      'back_pressure',
-      'daily_oil',
-      'daily_water',
-      'water_cut',
-      'last_overhaul',
-      'reservoir_pressure',
-      'bubble_point_pressure',
-      'aof'
+      '序号',
+      '井号',
+      '区块',
+      '油井类型',
+      '井底深度',
+      '泵挂深度',
+      '泵效',
+      '动液面',
+      '沉没度',
+      '电流',
+      '最大载荷',
+      '冲次',
+      '冲程',
+      '回压',
+      '日产油',
+      '日产水',
+      '含水',
+      '最近作业日期',
+      '地层压力',
+      '饱和压力'
     ].forEach((field) => {
       expect(app).toContain(field);
     });
+    expect(app).not.toContain('<strong>aof</strong>');
   });
 });

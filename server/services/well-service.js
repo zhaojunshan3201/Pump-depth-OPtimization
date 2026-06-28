@@ -4,27 +4,26 @@ const ExcelJS = require('exceljs');
 
 const VALID_STATUSES = new Set(['producing', 'maintenance', 'shutdown']);
 const WELL_IMPORT_FIELDS = [
-  'id',
-  'name',
-  'zone',
-  'status',
-  'depth',
-  'pump_depth',
-  'pump_efficiency',
-  'dynamic_level',
-  'submergence',
-  'current_value',
-  'load_value',
-  'stroke_rate',
-  'stroke_length',
-  'back_pressure',
-  'daily_oil',
-  'daily_water',
-  'water_cut',
-  'last_overhaul',
-  'reservoir_pressure',
-  'bubble_point_pressure',
-  'aof'
+  '序号',
+  '井号',
+  '区块',
+  '油井类型',
+  '井底深度',
+  '泵挂深度',
+  '泵效',
+  '动液面',
+  '沉没度',
+  '电流',
+  '最大载荷',
+  '冲次',
+  '冲程',
+  '回压',
+  '日产油',
+  '日产水',
+  '含水',
+  '最近作业日期',
+  '地层压力',
+  '饱和压力'
 ];
 const NUMERIC_FIELDS = new Set([
   'depth',
@@ -84,6 +83,59 @@ const SNAKE_CASE_FIELDS = {
   reservoir_pressure: 'reservoirPressure',
   bubble_point_pressure: 'bubblePointPressure',
   aof: 'AOF'
+};
+const IMPORT_FIELD_ALIASES = {
+  id: 'id',
+  name: 'name',
+  zone: 'zone',
+  status: 'status',
+  depth: 'depth',
+  pump_depth: 'pumpDepth',
+  pump_efficiency: 'pumpEfficiency',
+  dynamic_level: 'dynamicLevel',
+  submergence: 'submergence',
+  current_value: 'current',
+  load_value: 'load',
+  stroke_rate: 'strokeRate',
+  stroke_length: 'strokeLength',
+  back_pressure: 'backPressure',
+  daily_oil: 'dailyOil',
+  daily_water: 'dailyWater',
+  water_cut: 'waterCut',
+  last_overhaul: 'lastOverhaul',
+  reservoir_pressure: 'reservoirPressure',
+  bubble_point_pressure: 'bubblePointPressure',
+  aof: 'AOF',
+  '井号': 'id',
+  '区块': 'zone',
+  '油井类型': 'status',
+  '井底深度': 'depth',
+  '泵挂深度': 'pumpDepth',
+  '泵效': 'pumpEfficiency',
+  '动液面': 'dynamicLevel',
+  '沉没度': 'submergence',
+  '电流': 'current',
+  '最大载荷': 'load',
+  '冲次': 'strokeRate',
+  '冲程': 'strokeLength',
+  '回压': 'backPressure',
+  '日产油': 'dailyOil',
+  '日产水': 'dailyWater',
+  '含水': 'waterCut',
+  '最近作业日期': 'lastOverhaul',
+  '地层压力': 'reservoirPressure',
+  '饱和压力': 'bubblePointPressure'
+};
+const STATUS_ALIASES = {
+  '生产': 'producing',
+  '正常': 'producing',
+  producing: 'producing',
+  '作业': 'maintenance',
+  '维护': 'maintenance',
+  maintenance: 'maintenance',
+  '关停': 'shutdown',
+  '停井': 'shutdown',
+  shutdown: 'shutdown'
 };
 const WELL_COLUMNS = `
   id, name, zone, status, depth, pump_depth, pump_efficiency, dynamic_level,
@@ -184,10 +236,25 @@ function toDbValues(payload) {
 
 function normalizeWellPayload(payload) {
   const normalized = { ...payload };
+  for (const [sourceKey, targetKey] of Object.entries(IMPORT_FIELD_ALIASES)) {
+    if (normalized[targetKey] === undefined && normalized[sourceKey] !== undefined) {
+      normalized[targetKey] = normalized[sourceKey];
+    }
+  }
   for (const [snakeKey, camelKey] of Object.entries(SNAKE_CASE_FIELDS)) {
     if (normalized[camelKey] === undefined && normalized[snakeKey] !== undefined) {
       normalized[camelKey] = normalized[snakeKey];
     }
+  }
+  if (normalized.name === undefined && normalized.id !== undefined) {
+    normalized.name = normalized.id;
+  }
+  if (normalized.status !== undefined && normalized.status !== null) {
+    normalized.status = STATUS_ALIASES[String(normalized.status).trim()] || normalized.status;
+  }
+  if (normalized.AOF === undefined || normalized.AOF === null || normalized.AOF === '') {
+    const dailyOil = Number(normalized.dailyOil || 0);
+    normalized.AOF = Number.isFinite(dailyOil) && dailyOil > 0 ? Number((dailyOil * 3).toFixed(2)) : 0;
   }
   return normalized;
 }
@@ -221,6 +288,28 @@ async function createImportTemplateBuffer() {
       16.8
     ]
   ];
+  rows[1] = [
+    1,
+    'REAL-1',
+    '采油作业一区',
+    '生产',
+    1888,
+    1666,
+    51.2,
+    1200,
+    466,
+    37.8,
+    43.2,
+    4.2,
+    3.0,
+    0.86,
+    4.6,
+    10.1,
+    68.7,
+    '2026-06-01',
+    15.6,
+    9.4
+  ];
   rows.forEach((row) => worksheet.addRow(row));
   WELL_IMPORT_FIELDS.forEach((field, index) => {
     worksheet.getColumn(index + 1).width = Math.max(field.length + 2, 14);
@@ -247,16 +336,19 @@ async function readWellsFromExcel(buffer) {
   }
 
   const headerRow = worksheet.getRow(1);
-  const headers = WELL_IMPORT_FIELDS.map((_, index) => String(headerRow.getCell(index + 1).value || '').trim());
+  const headers = [];
+  headerRow.eachCell((cell, index) => {
+    headers[index - 1] = String(cell.value || '').trim();
+  });
   const wells = [];
   worksheet.eachRow((row, rowNumber) => {
     if (rowNumber === 1) return;
     const well = {};
-    WELL_IMPORT_FIELDS.forEach((field, index) => {
-      const header = headers[index] || field;
+    headers.forEach((header, index) => {
+      if (!header || header === '序号') return;
       well[header] = normalizeCellValue(row.getCell(index + 1).value);
     });
-    if (String(well.id || '').trim() !== '') wells.push(well);
+    if (String(well.id || well['井号'] || '').trim() !== '') wells.push(well);
   });
   return wells;
 }
