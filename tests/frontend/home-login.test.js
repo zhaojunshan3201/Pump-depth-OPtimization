@@ -90,6 +90,9 @@ describe('home access and login flow', () => {
     expect(css).toContain('@keyframes pumpjack-rock');
     expect(css).toContain('@keyframes pumpjack-left-lift');
     expect(css).toContain('@keyframes pumpjack-right-lift');
+    expect(css).toContain('rotate(-9deg)');
+    expect(css).toContain('rotate(12deg)');
+    expect(css).toContain('translateY(14px)');
   });
 
   it('adds a real Excel data import entry with template download and upload controls', () => {

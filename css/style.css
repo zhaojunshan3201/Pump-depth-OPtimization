@@ -91,7 +91,7 @@ body {
 .pumpjack-moving {
   transform-box: view-box;
   transform-origin: 147px 101px;
-  animation: pumpjack-rock 1.7s ease-in-out infinite;
+  animation: pumpjack-rock 1.55s ease-in-out infinite;
 }
 
 .pumpjack-pivot-hole {
@@ -101,28 +101,28 @@ body {
 .pumpjack-left-weight {
   transform-box: view-box;
   transform-origin: 60px 150px;
-  animation: pumpjack-left-lift 1.7s ease-in-out infinite;
+  animation: pumpjack-left-lift 1.55s ease-in-out infinite;
 }
 
 .pumpjack-right-weight {
   transform-box: view-box;
   transform-origin: 219px 112px;
-  animation: pumpjack-right-lift 1.7s ease-in-out infinite;
+  animation: pumpjack-right-lift 1.55s ease-in-out infinite;
 }
 
 @keyframes pumpjack-rock {
-  0%, 100% { transform: rotate(-4deg); }
-  50% { transform: rotate(6deg); }
+  0%, 100% { transform: rotate(-9deg); }
+  50% { transform: rotate(12deg); }
 }
 
 @keyframes pumpjack-left-lift {
-  0%, 100% { transform: translateY(6px); }
-  50% { transform: translateY(-8px); }
+  0%, 100% { transform: translateY(14px); }
+  50% { transform: translateY(-16px); }
 }
 
 @keyframes pumpjack-right-lift {
-  0%, 100% { transform: translateY(-7px); }
-  50% { transform: translateY(8px); }
+  0%, 100% { transform: translateY(-14px); }
+  50% { transform: translateY(16px); }
 }
 
 .sidebar-header h1 {
