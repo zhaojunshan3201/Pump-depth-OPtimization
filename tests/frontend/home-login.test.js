@@ -79,7 +79,11 @@ describe('home access and login flow', () => {
     const css = fs.readFileSync(path.join(root, 'css/style.css'), 'utf8');
 
     expect(html).toContain('pumpjack-logo');
-    expect(html).toContain('pumpjack-beam');
+    expect(html).toContain('pumpjack-svg');
+    expect(html).toContain('pumpjack-walking-beam');
+    expect(html).toContain('pumpjack-horsehead');
+    expect(html).toContain('pumpjack-samson-post');
+    expect(html).toContain('pumpjack-crank');
     expect(html).toContain('pumpjack-counterweight');
     expect(css).toContain('@keyframes pumpjack-rock');
     expect(css).toContain('@keyframes counterweight-spin');
