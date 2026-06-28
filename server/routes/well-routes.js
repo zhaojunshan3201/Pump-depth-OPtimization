@@ -21,6 +21,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/import-template', async (req, res) => {
+  try {
+    const buffer = await wellService.createImportTemplateBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="well-import-template.xlsx"');
+    res.send(buffer);
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const well = await wellService.getWell(req.params.id);
@@ -80,6 +91,15 @@ router.post('/', async (req, res) => {
 router.post('/import', async (req, res) => {
   try {
     const wells = await wellService.importWells(req.body);
+    res.json({ imported: wells.length, wells });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
+router.post('/import-excel', async (req, res) => {
+  try {
+    const wells = await wellService.importWellsFromExcel(req.body);
     res.json({ imported: wells.length, wells });
   } catch (error) {
     handleError(error, res);

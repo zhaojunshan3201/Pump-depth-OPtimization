@@ -239,6 +239,14 @@ body {
   flex-wrap: wrap;
 }
 
+.import-upload-box {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
 .import-field-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -263,6 +271,12 @@ body {
   color: var(--text-light);
   font-size: 12px;
   margin-top: 3px;
+}
+
+@media (max-width: 720px) {
+  .import-upload-box {
+    grid-template-columns: 1fr;
+  }
 }
 
 .header-right {

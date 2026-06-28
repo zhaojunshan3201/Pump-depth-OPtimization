@@ -74,7 +74,7 @@ describe('home access and login flow', () => {
     expect(css).toContain('.header-status-strip');
   });
 
-  it('adds a real data import entry with the full well field template', () => {
+  it('adds a real Excel data import entry with template download and upload controls', () => {
     const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
     const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
     const data = fs.readFileSync(path.join(root, 'js/data.js'), 'utf8');
@@ -82,8 +82,14 @@ describe('home access and login flow', () => {
     expect(html).toContain('data-page="import"');
     expect(html).toContain('id="page-import"');
     expect(app).toContain('renderImport()');
-    expect(app).toContain('saveRealDataImport');
+    expect(app).toContain('downloadImportTemplate');
+    expect(app).toContain('saveExcelImport');
+    expect(app).toContain('type="file"');
+    expect(app).toContain('.xlsx');
     expect(data).toContain('importWells');
+    expect(data).toContain('downloadImportTemplate');
+    expect(data).toContain('importWellsExcel');
+    expect(app).not.toContain('realDataImportJson');
     [
       'id',
       'name',

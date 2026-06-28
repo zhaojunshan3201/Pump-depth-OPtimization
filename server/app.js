@@ -45,7 +45,7 @@ function allowLocalApiAccess(req, res, next) {
 function createApp() {
   const app = express();
   app.use('/api', allowLocalApiAccess);
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
   app.use('/api', healthRoutes);
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/screening', screeningRoutes);

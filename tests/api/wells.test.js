@@ -5,6 +5,13 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const db = require('../../server/db');
 const { createApp } = require('../../server/app');
+const ExcelJS = require('exceljs');
+
+function parseBinary(res, callback) {
+  const chunks = [];
+  res.on('data', (chunk) => chunks.push(chunk));
+  res.on('end', () => callback(null, Buffer.concat(chunks)));
+}
 
 const dbWell = {
   id: 'G3-1',
@@ -181,6 +188,127 @@ describe('wells api', () => {
       43.2,
       4.2,
       3.0,
+      0.86,
+      4.6,
+      10.1,
+      68.7,
+      '2026-06-01',
+      15.6,
+      9.4,
+      16.8
+    ]);
+  });
+
+  test('downloads an Excel import template with all required well fields', async () => {
+    const app = createApp();
+
+    const res = await request(app).get('/api/wells/import-template').buffer(true).parse(parseBinary);
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(res.body);
+    const sheet = workbook.worksheets[0];
+    const headers = sheet.getRow(1).values.slice(1);
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('spreadsheetml.sheet');
+    expect(headers).toEqual([
+      'id',
+      'name',
+      'zone',
+      'status',
+      'depth',
+      'pump_depth',
+      'pump_efficiency',
+      'dynamic_level',
+      'submergence',
+      'current_value',
+      'load_value',
+      'stroke_rate',
+      'stroke_length',
+      'back_pressure',
+      'daily_oil',
+      'daily_water',
+      'water_cut',
+      'last_overhaul',
+      'reservoir_pressure',
+      'bubble_point_pressure',
+      'aof'
+    ]);
+  });
+
+  test('imports real wells from an uploaded Excel workbook', async () => {
+    vi.spyOn(db, 'query').mockResolvedValue({ rows: [dbWell] });
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('油井数据');
+    worksheet.addRow([
+      'id',
+      'name',
+      'zone',
+      'status',
+      'depth',
+      'pump_depth',
+      'pump_efficiency',
+      'dynamic_level',
+      'submergence',
+      'current_value',
+      'load_value',
+      'stroke_rate',
+      'stroke_length',
+      'back_pressure',
+      'daily_oil',
+      'daily_water',
+      'water_cut',
+      'last_overhaul',
+      'reservoir_pressure',
+      'bubble_point_pressure',
+      'aof'
+    ]);
+    worksheet.addRow([
+      'REAL-XLSX-1',
+      'Excel井-1',
+      '一区',
+      'producing',
+      1888,
+      1666,
+      51.2,
+      1200,
+      466,
+      37.8,
+      43.2,
+      4.2,
+      3.0,
+      0.86,
+      4.6,
+      10.1,
+      68.7,
+      '2026-06-01',
+      15.6,
+      9.4,
+      16.8
+    ]);
+    const buffer = Buffer.from(await workbook.xlsx.writeBuffer());
+    const app = createApp();
+
+    const res = await request(app).post('/api/wells/import-excel').send({
+      fileName: 'real-wells.xlsx',
+      fileBase64: buffer.toString('base64')
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.imported).toBe(1);
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('on conflict (id) do update set'), [
+      'REAL-XLSX-1',
+      'Excel井-1',
+      '一区',
+      'producing',
+      1888,
+      1666,
+      51.2,
+      1200,
+      466,
+      37.8,
+      43.2,
+      4.2,
+      3,
       0.86,
       4.6,
       10.1,

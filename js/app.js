@@ -537,43 +537,19 @@ const App = {
 
   renderImport() {
     const container = document.getElementById('import-container');
-    const sample = JSON.stringify([
-      {
-        id: 'REAL-1',
-        name: '真实井-1',
-        zone: '采油作业一区',
-        status: 'producing',
-        depth: 1888,
-        pump_depth: 1666,
-        pump_efficiency: 51.2,
-        dynamic_level: 1200,
-        submergence: 466,
-        current_value: 37.8,
-        load_value: 43.2,
-        stroke_rate: 4.2,
-        stroke_length: 3.0,
-        back_pressure: 0.86,
-        daily_oil: 4.6,
-        daily_water: 10.1,
-        water_cut: 68.7,
-        last_overhaul: '2026-06-01',
-        reservoir_pressure: 15.6,
-        bubble_point_pressure: 9.4,
-        aof: 16.8
-      }
-    ], null, 2);
-
     container.innerHTML = `
       <div class="card import-panel">
-        <div class="card-header"><h3>真实油井数据导入</h3><span>按井号 upsert，已有井覆盖最新参数</span></div>
+        <div class="card-header"><h3>真实油井数据导入</h3><span>下载模板，填写后导入</span></div>
         <div class="card-body">
-          <div class="alert alert-info">请粘贴 JSON 数组，字段使用下方模板。status 只能是 producing、maintenance、shutdown。</div>
-          <form id="realDataImportForm" onsubmit="App.saveRealDataImport(event)">
-            <textarea class="form-control import-json-input" id="realDataImportJson" spellcheck="false">${sample}</textarea>
-            <div class="import-actions">
-              <button class="btn btn-success btn-sm" type="submit">写入真实数据</button>
-              <button class="btn btn-outline btn-sm" type="button" onclick="App.renderImport()">恢复模板</button>
-              <span id="realDataImportStatus"></span>
+          <div class="alert alert-info">先下载 Excel 模板，按模板字段填写真实油井数据。导入时按井号 upsert，已有井覆盖最新参数。</div>
+          <div class="import-actions">
+            <button class="btn btn-primary btn-sm" type="button" onclick="App.downloadImportTemplate()">下载Excel模板</button>
+          </div>
+          <form id="excelImportForm" onsubmit="App.saveExcelImport(event)">
+            <div class="import-upload-box">
+              <input class="form-control" id="excelImportFile" type="file" accept=".xlsx,.xls" required>
+              <button class="btn btn-success btn-sm" type="submit">导入模板数据</button>
+              <span id="excelImportStatus"></span>
             </div>
           </form>
           <div class="import-field-grid">
@@ -604,15 +580,20 @@ const App = {
     `;
   },
 
-  async saveRealDataImport(event) {
-    event.preventDefault();
-    if (!this.requireAuth('写入真实油井数据', () => this.saveRealDataImport({ preventDefault() {} }))) return;
+  downloadImportTemplate() {
+    DataStore.downloadImportTemplate();
+  },
 
-    const input = document.getElementById('realDataImportJson');
-    const status = document.getElementById('realDataImportStatus');
+  async saveExcelImport(event) {
+    event.preventDefault();
+    if (!this.requireAuth('导入真实油井数据', () => this.saveExcelImport({ preventDefault() {} }))) return;
+
+    const input = document.getElementById('excelImportFile');
+    const status = document.getElementById('excelImportStatus');
     try {
-      const wells = JSON.parse(input.value);
-      const result = await DataStore.importWells(wells);
+      const file = input.files && input.files[0];
+      if (!file) throw new Error('请选择Excel模板文件');
+      const result = await DataStore.importWellsExcel(file);
       if (status) {
         status.textContent = `已写入 ${result.imported} 口井`;
         status.style.color = 'var(--success)';

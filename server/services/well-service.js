@@ -1,7 +1,31 @@
 const db = require('../db');
 const { mapWell } = require('./formatters');
+const ExcelJS = require('exceljs');
 
 const VALID_STATUSES = new Set(['producing', 'maintenance', 'shutdown']);
+const WELL_IMPORT_FIELDS = [
+  'id',
+  'name',
+  'zone',
+  'status',
+  'depth',
+  'pump_depth',
+  'pump_efficiency',
+  'dynamic_level',
+  'submergence',
+  'current_value',
+  'load_value',
+  'stroke_rate',
+  'stroke_length',
+  'back_pressure',
+  'daily_oil',
+  'daily_water',
+  'water_cut',
+  'last_overhaul',
+  'reservoir_pressure',
+  'bubble_point_pressure',
+  'aof'
+];
 const NUMERIC_FIELDS = new Set([
   'depth',
   'pumpDepth',
@@ -168,6 +192,75 @@ function normalizeWellPayload(payload) {
   return normalized;
 }
 
+async function createImportTemplateBuffer() {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('油井数据');
+  const rows = [
+    WELL_IMPORT_FIELDS,
+    [
+      'REAL-1',
+      '真实井-1',
+      '采油作业一区',
+      'producing',
+      1888,
+      1666,
+      51.2,
+      1200,
+      466,
+      37.8,
+      43.2,
+      4.2,
+      3.0,
+      0.86,
+      4.6,
+      10.1,
+      68.7,
+      '2026-06-01',
+      15.6,
+      9.4,
+      16.8
+    ]
+  ];
+  rows.forEach((row) => worksheet.addRow(row));
+  WELL_IMPORT_FIELDS.forEach((field, index) => {
+    worksheet.getColumn(index + 1).width = Math.max(field.length + 2, 14);
+  });
+  worksheet.getRow(1).font = { bold: true };
+  return Buffer.from(await workbook.xlsx.writeBuffer());
+}
+
+function normalizeCellValue(value) {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (value && typeof value === 'object') {
+    if (value.text) return value.text;
+    if (value.result !== undefined) return value.result;
+  }
+  return value;
+}
+
+async function readWellsFromExcel(buffer) {
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(buffer);
+  const worksheet = workbook.worksheets[0];
+  if (!worksheet) {
+    throw validationError('Excel模板不能为空');
+  }
+
+  const headerRow = worksheet.getRow(1);
+  const headers = WELL_IMPORT_FIELDS.map((_, index) => String(headerRow.getCell(index + 1).value || '').trim());
+  const wells = [];
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return;
+    const well = {};
+    WELL_IMPORT_FIELDS.forEach((field, index) => {
+      const header = headers[index] || field;
+      well[header] = normalizeCellValue(row.getCell(index + 1).value);
+    });
+    if (String(well.id || '').trim() !== '') wells.push(well);
+  });
+  return wells;
+}
+
 async function listWells() {
   const result = await db.query(`select ${WELL_COLUMNS} from wells order by id`);
   return result.rows.map(mapWell);
@@ -254,6 +347,16 @@ async function importWells(payload) {
   return imported;
 }
 
+async function importWellsFromExcel(payload) {
+  if (!payload?.fileBase64) {
+    throw validationError('请上传Excel模板文件');
+  }
+
+  const buffer = Buffer.from(payload.fileBase64, 'base64');
+  const wells = await readWellsFromExcel(buffer);
+  return importWells(wells);
+}
+
 async function updateWell(id, payload) {
   requireWellId(id);
   validateUpdatePayload(payload);
@@ -307,4 +410,13 @@ async function getDynamicLevel(id) {
   }));
 }
 
-module.exports = { listWells, getWell, createWell, importWells, updateWell, getDynamicLevel };
+module.exports = {
+  listWells,
+  getWell,
+  createWell,
+  importWells,
+  importWellsFromExcel,
+  createImportTemplateBuffer,
+  updateWell,
+  getDynamicLevel
+};

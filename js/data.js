@@ -232,6 +232,36 @@ const DataStore = {
     return result;
   },
 
+  downloadImportTemplate() {
+    window.location.href = `${this.getApiBase()}/api/wells/import-template`;
+  },
+
+  async importWellsExcel(file) {
+    const buffer = await file.arrayBuffer();
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const chunkSize = 0x8000;
+    for (let index = 0; index < bytes.length; index += chunkSize) {
+      const chunk = bytes.subarray(index, index + chunkSize);
+      binary += String.fromCharCode.apply(null, chunk);
+    }
+
+    const result = await this.request('/api/wells/import-excel', {
+      method: 'POST',
+      body: JSON.stringify({
+        fileName: file.name,
+        fileBase64: btoa(binary)
+      })
+    });
+    await Promise.all([
+      this.refreshWells(),
+      this.fetchZoneSummary(),
+      this.fetchPotentialWells(),
+      this.fetchTuningReminders()
+    ]);
+    return result;
+  },
+
   async getNodal(wellId) {
     const result = await this.request(`/api/nodal/${encodeURIComponent(wellId)}`);
     this.nodalResults[wellId] = result;
