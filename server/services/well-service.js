@@ -44,6 +44,23 @@ const REQUIRED_CREATE_FIELDS = [
   'bubblePointPressure',
   'AOF'
 ];
+const SNAKE_CASE_FIELDS = {
+  pump_depth: 'pumpDepth',
+  pump_efficiency: 'pumpEfficiency',
+  dynamic_level: 'dynamicLevel',
+  current_value: 'current',
+  load_value: 'load',
+  stroke_rate: 'strokeRate',
+  stroke_length: 'strokeLength',
+  back_pressure: 'backPressure',
+  daily_oil: 'dailyOil',
+  daily_water: 'dailyWater',
+  water_cut: 'waterCut',
+  last_overhaul: 'lastOverhaul',
+  reservoir_pressure: 'reservoirPressure',
+  bubble_point_pressure: 'bubblePointPressure',
+  aof: 'AOF'
+};
 const WELL_COLUMNS = `
   id, name, zone, status, depth, pump_depth, pump_efficiency, dynamic_level,
   submergence, current_value, load_value, stroke_rate, stroke_length,
@@ -141,6 +158,16 @@ function toDbValues(payload) {
   ];
 }
 
+function normalizeWellPayload(payload) {
+  const normalized = { ...payload };
+  for (const [snakeKey, camelKey] of Object.entries(SNAKE_CASE_FIELDS)) {
+    if (normalized[camelKey] === undefined && normalized[snakeKey] !== undefined) {
+      normalized[camelKey] = normalized[snakeKey];
+    }
+  }
+  return normalized;
+}
+
 async function listWells() {
   const result = await db.query(`select ${WELL_COLUMNS} from wells order by id`);
   return result.rows.map(mapWell);
@@ -153,6 +180,7 @@ async function getWell(id) {
 }
 
 async function createWell(payload) {
+  payload = normalizeWellPayload(payload);
   validateRequiredCreateFields(payload);
   validateStatus(payload.status);
 
@@ -171,6 +199,59 @@ async function createWell(payload) {
   );
 
   return mapWell(result.rows[0]);
+}
+
+async function importWells(payload) {
+  const wells = Array.isArray(payload) ? payload : payload?.wells;
+  if (!Array.isArray(wells) || wells.length === 0) {
+    throw validationError('导入数据不能为空');
+  }
+
+  const imported = [];
+  for (const rawWell of wells) {
+    const well = normalizeWellPayload(rawWell);
+    validateRequiredCreateFields(well);
+    validateStatus(well.status);
+
+    const result = await db.query(
+      `insert into wells (
+        id, name, zone, status, depth, pump_depth, pump_efficiency, dynamic_level,
+        submergence, current_value, load_value, stroke_rate, stroke_length,
+        back_pressure, daily_oil, daily_water, water_cut, last_overhaul,
+        reservoir_pressure, bubble_point_pressure, aof
+      ) values (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15,
+        $16, $17, $18, $19, $20, $21
+      )
+      on conflict (id) do update set
+        name = excluded.name,
+        zone = excluded.zone,
+        status = excluded.status,
+        depth = excluded.depth,
+        pump_depth = excluded.pump_depth,
+        pump_efficiency = excluded.pump_efficiency,
+        dynamic_level = excluded.dynamic_level,
+        submergence = excluded.submergence,
+        current_value = excluded.current_value,
+        load_value = excluded.load_value,
+        stroke_rate = excluded.stroke_rate,
+        stroke_length = excluded.stroke_length,
+        back_pressure = excluded.back_pressure,
+        daily_oil = excluded.daily_oil,
+        daily_water = excluded.daily_water,
+        water_cut = excluded.water_cut,
+        last_overhaul = excluded.last_overhaul,
+        reservoir_pressure = excluded.reservoir_pressure,
+        bubble_point_pressure = excluded.bubble_point_pressure,
+        aof = excluded.aof,
+        updated_at = now()
+      returning ${WELL_COLUMNS}`,
+      toDbValues(well)
+    );
+    imported.push(mapWell(result.rows[0]));
+  }
+
+  return imported;
 }
 
 async function updateWell(id, payload) {
@@ -226,4 +307,4 @@ async function getDynamicLevel(id) {
   }));
 }
 
-module.exports = { listWells, getWell, createWell, updateWell, getDynamicLevel };
+module.exports = { listWells, getWell, createWell, importWells, updateWell, getDynamicLevel };

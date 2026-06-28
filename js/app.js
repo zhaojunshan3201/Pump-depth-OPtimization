@@ -535,6 +535,99 @@ const App = {
     ]);
   },
 
+  renderImport() {
+    const container = document.getElementById('import-container');
+    const sample = JSON.stringify([
+      {
+        id: 'REAL-1',
+        name: '真实井-1',
+        zone: '采油作业一区',
+        status: 'producing',
+        depth: 1888,
+        pump_depth: 1666,
+        pump_efficiency: 51.2,
+        dynamic_level: 1200,
+        submergence: 466,
+        current_value: 37.8,
+        load_value: 43.2,
+        stroke_rate: 4.2,
+        stroke_length: 3.0,
+        back_pressure: 0.86,
+        daily_oil: 4.6,
+        daily_water: 10.1,
+        water_cut: 68.7,
+        last_overhaul: '2026-06-01',
+        reservoir_pressure: 15.6,
+        bubble_point_pressure: 9.4,
+        aof: 16.8
+      }
+    ], null, 2);
+
+    container.innerHTML = `
+      <div class="card import-panel">
+        <div class="card-header"><h3>真实油井数据导入</h3><span>按井号 upsert，已有井覆盖最新参数</span></div>
+        <div class="card-body">
+          <div class="alert alert-info">请粘贴 JSON 数组，字段使用下方模板。status 只能是 producing、maintenance、shutdown。</div>
+          <form id="realDataImportForm" onsubmit="App.saveRealDataImport(event)">
+            <textarea class="form-control import-json-input" id="realDataImportJson" spellcheck="false">${sample}</textarea>
+            <div class="import-actions">
+              <button class="btn btn-success btn-sm" type="submit">写入真实数据</button>
+              <button class="btn btn-outline btn-sm" type="button" onclick="App.renderImport()">恢复模板</button>
+              <span id="realDataImportStatus"></span>
+            </div>
+          </form>
+          <div class="import-field-grid">
+            <div><strong>id</strong><span>井号</span></div>
+            <div><strong>name</strong><span>井名</span></div>
+            <div><strong>zone</strong><span>作业区/区块</span></div>
+            <div><strong>status</strong><span>producing / maintenance / shutdown</span></div>
+            <div><strong>depth</strong><span>井深</span></div>
+            <div><strong>pump_depth</strong><span>泵挂深度</span></div>
+            <div><strong>pump_efficiency</strong><span>泵效</span></div>
+            <div><strong>dynamic_level</strong><span>动液面</span></div>
+            <div><strong>submergence</strong><span>沉没度</span></div>
+            <div><strong>current_value</strong><span>电流</span></div>
+            <div><strong>load_value</strong><span>载荷</span></div>
+            <div><strong>stroke_rate</strong><span>冲次</span></div>
+            <div><strong>stroke_length</strong><span>冲程</span></div>
+            <div><strong>back_pressure</strong><span>回压</span></div>
+            <div><strong>daily_oil</strong><span>日油</span></div>
+            <div><strong>daily_water</strong><span>日水</span></div>
+            <div><strong>water_cut</strong><span>含水率</span></div>
+            <div><strong>last_overhaul</strong><span>最近作业日期</span></div>
+            <div><strong>reservoir_pressure</strong><span>地层压力</span></div>
+            <div><strong>bubble_point_pressure</strong><span>饱和压力</span></div>
+            <div><strong>aof</strong><span>无阻流量</span></div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  async saveRealDataImport(event) {
+    event.preventDefault();
+    if (!this.requireAuth('写入真实油井数据', () => this.saveRealDataImport({ preventDefault() {} }))) return;
+
+    const input = document.getElementById('realDataImportJson');
+    const status = document.getElementById('realDataImportStatus');
+    try {
+      const wells = JSON.parse(input.value);
+      const result = await DataStore.importWells(wells);
+      if (status) {
+        status.textContent = `已写入 ${result.imported} 口井`;
+        status.style.color = 'var(--success)';
+      }
+      this.updateWelcomeStats();
+      const badge = document.getElementById('potentialBadge');
+      if (badge) badge.textContent = DataStore.getPotentialWells().length;
+    } catch (error) {
+      if (status) {
+        status.textContent = error.message || '导入失败';
+        status.style.color = 'var(--danger)';
+      }
+    }
+  },
+
   renderHistory() {
     const container = document.getElementById('history-container');
     container.innerHTML = `

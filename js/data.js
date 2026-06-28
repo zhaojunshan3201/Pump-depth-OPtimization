@@ -218,6 +218,20 @@ const DataStore = {
     return well;
   },
 
+  async importWells(wells) {
+    const result = await this.request('/api/wells/import', {
+      method: 'POST',
+      body: JSON.stringify({ wells })
+    });
+    await Promise.all([
+      this.refreshWells(),
+      this.fetchZoneSummary(),
+      this.fetchPotentialWells(),
+      this.fetchTuningReminders()
+    ]);
+    return result;
+  },
+
   async getNodal(wellId) {
     const result = await this.request(`/api/nodal/${encodeURIComponent(wellId)}`);
     this.nodalResults[wellId] = result;

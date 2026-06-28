@@ -73,4 +73,41 @@ describe('home access and login flow', () => {
     expect(css).toContain('.app-shell');
     expect(css).toContain('.header-status-strip');
   });
+
+  it('adds a real data import entry with the full well field template', () => {
+    const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+    const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
+    const data = fs.readFileSync(path.join(root, 'js/data.js'), 'utf8');
+
+    expect(html).toContain('data-page="import"');
+    expect(html).toContain('id="page-import"');
+    expect(app).toContain('renderImport()');
+    expect(app).toContain('saveRealDataImport');
+    expect(data).toContain('importWells');
+    [
+      'id',
+      'name',
+      'zone',
+      'status',
+      'depth',
+      'pump_depth',
+      'pump_efficiency',
+      'dynamic_level',
+      'submergence',
+      'current_value',
+      'load_value',
+      'stroke_rate',
+      'stroke_length',
+      'back_pressure',
+      'daily_oil',
+      'daily_water',
+      'water_cut',
+      'last_overhaul',
+      'reservoir_pressure',
+      'bubble_point_pressure',
+      'aof'
+    ].forEach((field) => {
+      expect(app).toContain(field);
+    });
+  });
 });

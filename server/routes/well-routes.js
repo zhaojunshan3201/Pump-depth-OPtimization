@@ -77,6 +77,15 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.post('/import', async (req, res) => {
+  try {
+    const wells = await wellService.importWells(req.body);
+    res.json({ imported: wells.length, wells });
+  } catch (error) {
+    handleError(error, res);
+  }
+});
+
 router.put('/:id', async (req, res) => {
   try {
     const well = await wellService.updateWell(req.params.id, req.body);

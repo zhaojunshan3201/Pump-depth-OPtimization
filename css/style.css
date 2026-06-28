@@ -223,6 +223,48 @@ body {
   font-weight: 400 !important;
 }
 
+.import-json-input {
+  min-height: 360px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.import-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 18px;
+  flex-wrap: wrap;
+}
+
+.import-field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.import-field-grid div {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 10px;
+  background: var(--bg-light);
+}
+
+.import-field-grid strong {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.import-field-grid span {
+  display: block;
+  color: var(--text-light);
+  font-size: 12px;
+  margin-top: 3px;
+}
+
 .header-right {
   display: flex;
   align-items: center;

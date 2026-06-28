@@ -132,6 +132,66 @@ describe('wells api', () => {
     expect(db.query).toHaveBeenCalledWith(expect.stringContaining('insert into wells'), expect.any(Array));
   });
 
+  test('imports real wells with snake_case field names and upserts them', async () => {
+    vi.spyOn(db, 'query').mockResolvedValue({ rows: [dbWell] });
+    const app = createApp();
+
+    const res = await request(app).post('/api/wells/import').send({
+      wells: [{
+        id: 'REAL-1',
+        name: '真实井-1',
+        zone: '一区',
+        status: 'producing',
+        depth: 1888,
+        pump_depth: 1666,
+        pump_efficiency: 51.2,
+        dynamic_level: 1200,
+        submergence: 466,
+        current_value: 37.8,
+        load_value: 43.2,
+        stroke_rate: 4.2,
+        stroke_length: 3.0,
+        back_pressure: 0.86,
+        daily_oil: 4.6,
+        daily_water: 10.1,
+        water_cut: 68.7,
+        last_overhaul: '2026-06-01',
+        reservoir_pressure: 15.6,
+        bubble_point_pressure: 9.4,
+        aof: 16.8
+      }]
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      imported: 1,
+      wells: [expect.objectContaining({ id: 'G3-1', pumpDepth: 1200 })]
+    });
+    expect(db.query).toHaveBeenCalledWith(expect.stringContaining('on conflict (id) do update set'), [
+      'REAL-1',
+      '真实井-1',
+      '一区',
+      'producing',
+      1888,
+      1666,
+      51.2,
+      1200,
+      466,
+      37.8,
+      43.2,
+      4.2,
+      3.0,
+      0.86,
+      4.6,
+      10.1,
+      68.7,
+      '2026-06-01',
+      15.6,
+      9.4,
+      16.8
+    ]);
+  });
+
   test('rejects missing well id', async () => {
     const query = vi.spyOn(db, 'query');
     const app = createApp();
