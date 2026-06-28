@@ -133,19 +133,27 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo-icon pumpjack-logo" aria-label="运行中的抽油机">
-        <svg class="pumpjack-svg" viewBox="0 0 120 72" role="img" aria-hidden="true">
+        <svg class="pumpjack-svg pumpjack-silhouette" viewBox="0 0 256 256" role="img" aria-hidden="true">
+          <rect class="pumpjack-base" x="32" y="224" width="196" height="18" rx="9"/>
+          <path class="pumpjack-samson-post" d="M116 224 L142 103 L156 103 L185 224 H169 L160 184 H128 L120 224 Z"/>
+          <rect class="pumpjack-crossbar" x="130" y="151" width="30" height="8" rx="2"/>
+          <rect class="pumpjack-crossbar" x="124" y="181" width="42" height="8" rx="2"/>
           <g class="pumpjack-moving">
-            <path class="pumpjack-horsehead" d="M18 24 C10 24 8 15 15 11 C20 8 27 10 31 14 L27 23 C24 24 21 24 18 24 Z"/>
-            <path class="pumpjack-walking-beam" d="M27 16 L83 22"/>
-            <path class="pumpjack-hanger" d="M17 24 V48"/>
+            <polygon class="pumpjack-walking-beam" points="54,134 145,90 153,106 61,150"/>
+            <path class="pumpjack-horsehead" d="M188 28 C221 47 235 81 232 126 C224 116 217 109 209 103 L203 111 C198 115 190 110 188 103 L181 81 C174 78 172 69 178 63 L174 30 Z"/>
+            <path class="pumpjack-beam-neck" d="M146 89 L190 66 L200 88 L153 107 Z"/>
           </g>
-          <path class="pumpjack-samson-post" d="M62 24 L48 58 M62 24 L78 58 M45 58 H84"/>
-          <path class="pumpjack-bridle" d="M17 48 V61"/>
-          <circle class="pumpjack-counterweight" cx="92" cy="38" r="12"/>
-          <path class="pumpjack-crank" d="M92 38 L103 38"/>
-          <path class="pumpjack-link" d="M83 22 L92 38"/>
-          <path class="pumpjack-base" d="M12 62 H110 M32 58 H88"/>
-          <path class="pumpjack-wellhead" d="M12 61 H24 M18 61 V68"/>
+          <circle class="pumpjack-pivot" cx="147" cy="101" r="18"/>
+          <circle class="pumpjack-pivot-hole" cx="147" cy="101" r="8"/>
+          <g class="pumpjack-left-weight">
+            <rect x="52" y="133" width="18" height="22" rx="3"/>
+            <rect x="39" y="197" width="34" height="34" rx="3"/>
+            <rect x="53" y="151" width="4" height="46" rx="2"/>
+          </g>
+          <g class="pumpjack-right-weight">
+            <rect x="212" y="194" width="14" height="35" rx="3"/>
+            <rect x="217" y="111" width="4" height="83" rx="2"/>
+          </g>
         </svg>
       </div>
       <h1>泵挂深度动态优化</h1>

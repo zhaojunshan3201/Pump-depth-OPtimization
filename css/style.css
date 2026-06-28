@@ -69,72 +69,60 @@ body {
 
 .pumpjack-logo {
   position: relative;
-  width: 104px;
-  height: 62px;
+  width: 112px;
+  height: 92px;
 }
 
 .pumpjack-svg {
   display: block;
-  width: 104px;
-  height: 62px;
+  width: 112px;
+  height: 92px;
   overflow: visible;
+  color: #fff;
 }
 
 .pumpjack-svg path,
+.pumpjack-svg rect,
+.pumpjack-svg polygon,
 .pumpjack-svg circle {
-  fill: none;
-  stroke: #fff;
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  fill: currentColor;
 }
 
 .pumpjack-moving {
-  transform-box: fill-box;
-  transform-origin: 64px 22px;
+  transform-box: view-box;
+  transform-origin: 147px 101px;
   animation: pumpjack-rock 1.7s ease-in-out infinite;
 }
 
-.pumpjack-horsehead {
-  fill: rgba(255,255,255,0.08);
+.pumpjack-pivot-hole {
+  fill: var(--primary-dark) !important;
 }
 
-.pumpjack-hanger,
-.pumpjack-bridle {
-  stroke-width: 4;
-  animation: well-rod-pulse 1.7s ease-in-out infinite;
+.pumpjack-left-weight {
+  transform-box: view-box;
+  transform-origin: 60px 150px;
+  animation: pumpjack-left-lift 1.7s ease-in-out infinite;
 }
 
-.pumpjack-samson-post,
-.pumpjack-base,
-.pumpjack-wellhead {
-  opacity: 0.95;
-}
-
-.pumpjack-counterweight,
-.pumpjack-crank {
-  transform-box: fill-box;
-  transform-origin: 92px 38px;
-  animation: counterweight-spin 1.7s linear infinite;
-}
-
-.pumpjack-link {
-  stroke-width: 3;
-  opacity: 0.86;
+.pumpjack-right-weight {
+  transform-box: view-box;
+  transform-origin: 219px 112px;
+  animation: pumpjack-right-lift 1.7s ease-in-out infinite;
 }
 
 @keyframes pumpjack-rock {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(7deg); }
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(6deg); }
 }
 
-@keyframes counterweight-spin {
-  to { transform: rotate(360deg); }
+@keyframes pumpjack-left-lift {
+  0%, 100% { transform: translateY(6px); }
+  50% { transform: translateY(-8px); }
 }
 
-@keyframes well-rod-pulse {
-  0%, 100% { transform: translateY(-2px); }
-  50% { transform: translateY(4px); }
+@keyframes pumpjack-right-lift {
+  0%, 100% { transform: translateY(-7px); }
+  50% { transform: translateY(8px); }
 }
 
 .sidebar-header h1 {

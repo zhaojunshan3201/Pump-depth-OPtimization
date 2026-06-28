@@ -80,13 +80,16 @@ describe('home access and login flow', () => {
 
     expect(html).toContain('pumpjack-logo');
     expect(html).toContain('pumpjack-svg');
+    expect(html).toContain('pumpjack-silhouette');
     expect(html).toContain('pumpjack-walking-beam');
     expect(html).toContain('pumpjack-horsehead');
+    expect(html).toContain('pumpjack-pivot');
     expect(html).toContain('pumpjack-samson-post');
-    expect(html).toContain('pumpjack-crank');
-    expect(html).toContain('pumpjack-counterweight');
+    expect(html).toContain('pumpjack-left-weight');
+    expect(html).toContain('pumpjack-right-weight');
     expect(css).toContain('@keyframes pumpjack-rock');
-    expect(css).toContain('@keyframes counterweight-spin');
+    expect(css).toContain('@keyframes pumpjack-left-lift');
+    expect(css).toContain('@keyframes pumpjack-right-lift');
   });
 
   it('adds a real Excel data import entry with template download and upload controls', () => {
